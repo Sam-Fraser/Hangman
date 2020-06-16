@@ -6,13 +6,39 @@ class Game
   def initialize
     @word_master = WordMaster.new
     @word_guesser = WordGuesser.new
-    @good_guesses = Array.new(@code_word.length, '_')
-    @bad_guesses = []
     @tries = 0
+    @code_word = ''
+    @good_guesses = []
+    @bad_guesses = []
   end
 
   #plays game
   def play_game
+    #ask user if they want to play a new game or load a save
+    print "Would you like to play a new game? (y/n) "
+    new_game = gets.chomp.downcase
+    print "\n"
+    if new_game == "y"
+      play_new_game
+    else
+      load_game
+    end
+  end
+
+  #starts a new game
+  def play_new_game
+    #get new code word
+    @word_master.choose_code_word
+    @code_word = @word_master.code_word
+    @good_guesses = Array.new(@code_word.length, '_')
+    #tells you rules
+    puts "Try to figure out the word. If you guess 5 wrong letters, you lose!"
+    #starts playing
+    game_loop
+  end
+
+  #continues loaded game
+  def continue_game(code_word, good_guesses, bad_guesses, tries)
 
   end
 
@@ -23,13 +49,45 @@ class Game
 
   #loads unfinished game
   def load_game
+    #lists all save files
 
+    #asks which save file user would like to load
+    puts "Which save file would you like to load? (type name here)"
+    save_file = gets.chomp.downcase
+
+    #loads save file
+
+    #continues game
+    continue_game()
+  end
+
+  #basic game loop
+  def game_loop
+    loop do 
+      #tells you how many tries you have left
+      puts "You have #{5-@tries} bad guesses left."
+      #get guess from player
+      @word_guesser.get_new_letter
+      #saves guess to appropriate array
+      save_guess
+      #increases tries unless the guess was good
+      @tries += 1 unless good_guess?
+      if win?
+        puts "Congrats! You Win! The word was #{@code_word}"
+        break
+      elsif @tries == 5
+        puts "Shucks! You lost. The word was #{@code_word}"
+        break
+      end
+      puts "Bad Guesses:  #{@bad_guesses.join(', ')}"
+      puts "Current Word: #{@good_guesses.join('')}"
+    end
   end
 
   #saves guess to appropriate array
   def save_guess
     if good_guess?
-      matching_indexes(@word_master.code_word, @word_guesser.guess).each do |i|
+      matching_indexes(@code_word, @word_guesser.guess).each do |i|
         @good_guesses[i] = @word_guesser.guess
       end
     else
@@ -39,12 +97,17 @@ class Game
   
   #checks if guess is good
   def good_guess?
-    @word_master.code_word.include?(@word_guesser.guess)
+    @code_word.include?(@word_guesser.guess)
   end
 
   #returns array of all matching indexes for 
   def matching_indexes(str, target)
     (0..str.length-1).select { |i| str[i] == target}
+  end
+
+  #checks if you've won
+  def win?
+    @code_word == @good_guesses.join('')
   end
 
 end
@@ -92,6 +155,5 @@ class WordGuesser
   end
 end
 
-m = WordMaster.new
-m.choose_code_word
-p m.code_word
+g = Game.new
+g.play_new_game
