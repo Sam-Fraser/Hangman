@@ -1,3 +1,5 @@
+require 'pry'
+
 #plays game
 class Game
 
@@ -41,4 +43,13 @@ class WordGuesser
     input.length == 1 && input.match?(/^[[:alpha:]]+$/)
   end
 
+  def save_letter(letter)
+    @past_guesses.push(letter)
+  end
+
 end
+
+pl = WordGuesser.new('hi')
+pl.get_new_letter
+pl.save_letter(pl.guess)
+p pl.past_guesses
