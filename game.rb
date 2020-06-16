@@ -51,7 +51,7 @@ class WordGuesser
         @good_guesses[i] = @guess
       end
     else
-
+      @bad_guesses.push(@guess)
     end
   end  
   
@@ -71,3 +71,4 @@ pl = WordGuesser.new('hello')
 pl.get_new_letter
 pl.save_guess
 p pl.good_guesses
+p pl.bad_guesses
