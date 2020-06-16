@@ -21,12 +21,13 @@ end
 
 #gets guesses from user and compares guesses to master word
 class WordGuesser
-  attr_reader :guess, :past_guesses
+  attr_reader :guess, :good_guesses, :bad_guesses
 
   def initialize(code_word)
     @code_word = code_word
     @guess = ''
-    @past_guesses = []
+    @good_guesses = Array.new(@code_word.length, '_')
+    @bad_guesses = []
   end
 
   #gets new letter guess from user
@@ -43,13 +44,30 @@ class WordGuesser
     input.length == 1 && input.match?(/^[[:alpha:]]+$/)
   end
 
-  def save_letter(letter)
-    @past_guesses.push(letter)
+  #saves guess to appropriate array
+  def save_guess
+    if good_guess?
+      matching_indexes(@code_word, @guess).each do |i|
+        @good_guesses[i] = @guess
+      end
+    else
+
+    end
+  end  
+  
+  #checks if guess is good
+  def good_guess?
+    @code_word.include?(@guess)
+  end
+
+  #returns array of all matching indexes for 
+  def matching_indexes(str, target)
+    (0..str.length-1).select { |i| str[i] == target}
   end
 
 end
 
-pl = WordGuesser.new('hi')
+pl = WordGuesser.new('hello')
 pl.get_new_letter
-pl.save_letter(pl.guess)
-p pl.past_guesses
+pl.save_guess
+p pl.good_guesses
